@@ -41,7 +41,7 @@ The project demonstrates a complete workflow, including data ingestion with Cock
 
 <img src="https://i.ibb.co/5jNcRQg/ezgif-7-4e9458a4b4.gif" width="650">
 
-- CockroachDB Interface
+- CockroachDB Interfac
 
 <img src="https://i.ibb.co/m84T9Xs/Screenshot-2024-03-26-223725.png" width="650">
 
