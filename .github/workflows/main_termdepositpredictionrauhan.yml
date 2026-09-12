@@ -1,0 +1,51 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Build and deploy container app to Azure Web App - termdepositpredictionrauhan
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: 'ubuntu-latest'
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Log in to registry
+      uses: docker/login-action@v2
+      with:
+        registry: https://bankmarketingrauhan.azurecr.io/
+        username: ${{ secrets.AzureAppService_ContainerUsername_fac9a29340db4ac8b2ab344e82e0cee8 }}
+        password: ${{ secrets.AzureAppService_ContainerPassword_297bc61c02364cdc9df0253c10dd92c5 }}
+
+    - name: Build and push container image to registry
+      uses: docker/build-push-action@v3
+      with:
+        push: true
+        tags: bankmarketingrauhan.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_fac9a29340db4ac8b2ab344e82e0cee8 }}/termdepositprediction:${{ github.sha }}
+        file: ./Dockerfile
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: 'production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+    steps:
+    - name: Deploy to Azure Web App
+      id: deploy-to-webapp
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'termdepositpredictionrauhan'
+        slot-name: 'production'
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_db2af781f7244c3e9b027291aea2f3bd }}
+        images: 'bankmarketingrauhan.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_fac9a29340db4ac8b2ab344e82e0cee8 }}/termdepositprediction:${{ github.sha }}'
